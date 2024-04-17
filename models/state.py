@@ -1,27 +1,33 @@
 #!/usr/bin/python3
-"""This is the state class."""
-from models.base_model import Base, BaseModel
-from models.city import City
+""" State Module for HBNB project """
+from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
+from os import getenv
 from sqlalchemy.orm import relationship
-import models
-import os
 
 
 class State(BaseModel, Base):
-    """This is the class for State
-    Attributes:
-        name: input name
-    """
+    """ State class """
     __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-    cities = relationship('City', backref='state', cascade='delete')
 
-    if ("HBNB_TYPE_STORAGE", None) is None:
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        name = Column(String(128), nullable=False)
+        cities = relationship('City', cascade='all, delete', backref='state')
+    else:
+        ''' File Storage relationship '''
         @property
         def cities(self):
-            Clist = []
-            for city in list(models.storage.all(City).values()):
+            '''
+            returns the list of City instances
+            with state_id equals to the current State.id
+            '''
+            from models import storage
+            from models.city import City
+
+            city_list = []
+            city_dict = storage.all(City)
+
+            for city in city_dict.values():
                 if city.state_id == self.id:
                     city_list.append(city)
-            return Clist
+            return city_list

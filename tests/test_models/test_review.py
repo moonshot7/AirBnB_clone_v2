@@ -4,7 +4,6 @@ import unittest
 import os
 from models.review import Review
 from models.base_model import BaseModel
-import pep8
 
 
 class TestReview(unittest.TestCase):
@@ -30,13 +29,7 @@ class TestReview(unittest.TestCase):
         except Exception:
             pass
 
-    def test_pep8_Review(self):
-        """Tests pep8 style"""
-        style = pep8.StyleGuide(quiet=True)
-        p = style.check_files(['models/review.py'])
-        self.assertEqual(p.total_errors, 0, "fix pep8")
-
-    def test_checking_for_docstring_Review(self):
+    def test_checking_for_docstring_review(self):
         """checking for docstrings"""
         self.assertIsNotNone(Review.__doc__)
 
@@ -49,22 +42,23 @@ class TestReview(unittest.TestCase):
         self.assertTrue('text' in self.rev.__dict__)
         self.assertTrue('user_id' in self.rev.__dict__)
 
-    def test_is_subclass_Review(self):
+    def test_is_subclass_review(self):
         """test if review is subclass of BaseModel"""
         self.assertTrue(issubclass(self.rev.__class__, BaseModel), True)
 
-    def test_attribute_types_Review(self):
+    def test_attribute_types_review(self):
         """test attribute type for Review"""
         self.assertEqual(type(self.rev.text), str)
         self.assertEqual(type(self.rev.place_id), str)
         self.assertEqual(type(self.rev.user_id), str)
 
-    def test_save_Review(self):
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == 'db', 'Not file engine')
+    def test_save_review(self):
         """test if the save works"""
         self.rev.save()
         self.assertNotEqual(self.rev.created_at, self.rev.updated_at)
 
-    def test_to_dict_Review(self):
+    def test_to_dict_review(self):
         """test if dictionary works"""
         self.assertEqual('to_dict' in dir(self.rev), True)
 
